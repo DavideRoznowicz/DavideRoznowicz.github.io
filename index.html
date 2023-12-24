@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Seach Your Company</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="uikit/css/uikit.min.css" />
+        <link rel="stylesheet" href="style.css" />
+        <script src="uikit/js/uikit.min.js"></script>
+        <script src="uikit/js/uikit-icons.min.js"></script>
+    </head>
+
+    <body style="background: rgb(0, 0, 0);" class="uk-light">
+        <div id="Title-page"
+             class="uk-section uk-cover-container uk-background-cover uk-background-fixed"
+             style="background-image: linear-gradient( rgba(0, 0, 0, 0.9), rgba(90, 121, 206, 0.35) ), url(Background-home-page.jpg); filter: grayscale(0%);"
+             uk-height-viewport>
+            <div class="uk-container uk-position-center uk-text-center">
+                <h1 class="uk-heading-medium" uk-scrollspy="cls: uk-animation-slide-top">Search Your Competitor</h1>
+                <h2 uk-scrollspy="cls: uk-animation-slide-bottom; delay: 500">The most powerful Semantic-Based Search to find your company competitor</h2>
+            </div>
+            <a class="uk-position-bottom-center" href="#Search-page" uk-scroll>
+                <span uk-icon="icon: chevron-down; ratio: 3"></span>
+            </a>
+        </div>
+        <style>
+            .custom-text-color {
+                color: purple; 
+            }
+            .custom-search-bar {
+                display: flex;
+                flex-wrap: wrap;
+            }
+            .custom-search-input {
+                flex-grow: 0;
+            }
+            .chat-input-container {
+                position: top;
+                bottom: 0;
+                width: 100%;
+                padding: 0px;
+                background-color: transparent;
+                box-sizing: border-box;
+
+            }
+            .chat-input {
+                width: calc(100% - 40px);
+                min-height: calc(100% - 40px);
+                max-height: calc(100% - 40px);
+                padding: 0px;   /*how much the initial block is big in height*/
+                box-sizing: border-box;
+                border: 1px solid #000000;
+                border-radius: 25px;  /*how much the input borders are*/
+                resize: vertical;
+                font-size: 20px;
+                font-style: normal;
+                text-transform: none;
+                font-family: 'Roboto', sans-serif;
+                padding-left: 20px; /* Adjust the left padding as needed */
+                padding-top: 20px;
+            }
+        </style>
+        
+        <div id="Search-page"
+            style="background-image: url(light-bulb-blue.jpg); background-size: cover; filter: grayscale(0%)"
+            class="uk-section uk-padding-large"
+            uk-height-viewport>
+            <div class="uk-inline uk-container uk-flex uk-flex-column uk-flex-stretch uk-flex-middle">
+            <!-- <div class="uk-container uk-margin-large-top">
+                <form class="uk-search uk-search-large uk-search-navbar">
+                  <span uk-search-icon></span>
+                  <input class="uk-search-input" type="search" placeholder="Search...">
+                </form>
+            </div> -->
+            <!-- <div class="uk-container uk-margin-large-top">
+                <form class="uk-search uk-search-large custom-search-bar">
+                  <span uk-search-icon></span>
+                  <textarea r>
+                </form>
+            </div> -->
+              
+            <div class="chat-input-container">
+                <textarea class="chat-input" placeholder="Describe your company..." rows="2"></textarea>
+            </div>
+        </div>
+    </body>
+</html>
