@@ -1,3 +1,40 @@
 .snowviz-flex-grow {
     flex-grow: 1;
 }
+.custom-text-color {
+    color: purple;
+}
+.custom-search-bar {
+    display: flex;
+    flex-wrap: wrap;
+}
+.custom-search-input {
+    flex-grow: 0;
+}
+.chat-input-container {
+    position: top;
+    bottom: 0;
+    width: 100%;
+    padding: 0px;
+    background-color: transparent;
+    box-sizing: border-box;
+}
+.chat-input {
+    width: calc(100% - 40px);
+    min-height: calc(100% - 40px);
+    max-height: calc(100% - 40px);
+    padding: 0px;   /*how much the initial block is big in height*/
+    box-sizing: border-box;
+    border: 1px solid #000000;
+    border-radius: 25px;  /*how much the input borders are*/
+    resize: vertical;
+    font-size: 20px;
+    font-style: normal;
+    text-transform: none;
+    font-family: 'Roboto', sans-serif;
+    padding-left: 20px; /* Adjust the left padding as needed */
+    padding-top: 20px;
+}
+.custom-button {
+    border-radius: 15px;  /*how much the input borders are*/
+}
