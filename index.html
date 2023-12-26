@@ -9,6 +9,9 @@
         <link rel="stylesheet" href="style.css" />
         <script src="uikit/js/uikit.min.js"></script>
         <script src="uikit/js/uikit-icons.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
     </head>
 
     <body style="background: rgb(0, 0, 0);" class="uk-light">
@@ -26,7 +29,7 @@
         </div>
         <style>
             .custom-text-color {
-                color: purple; 
+                color: purple;
             }
             .custom-search-bar {
                 display: flex;
@@ -42,7 +45,6 @@
                 padding: 0px;
                 background-color: transparent;
                 box-sizing: border-box;
-
             }
             .chat-input {
                 width: calc(100% - 40px);
@@ -60,29 +62,48 @@
                 padding-left: 20px; /* Adjust the left padding as needed */
                 padding-top: 20px;
             }
+            .custom-button {
+                border-radius: 15px;  /*how much the input borders are*/
+            }
         </style>
-        
+
         <div id="Search-page"
-            style="background-image: url(light-bulb-blue.jpg); background-size: cover; filter: grayscale(0%)"
             class="uk-section uk-padding-large"
             uk-height-viewport>
             <div class="uk-inline uk-container uk-flex uk-flex-column uk-flex-stretch uk-flex-middle">
-            <!-- <div class="uk-container uk-margin-large-top">
-                <form class="uk-search uk-search-large uk-search-navbar">
-                  <span uk-search-icon></span>
-                  <input class="uk-search-input" type="search" placeholder="Search...">
-                </form>
-            </div> -->
-            <!-- <div class="uk-container uk-margin-large-top">
-                <form class="uk-search uk-search-large custom-search-bar">
-                  <span uk-search-icon></span>
-                  <textarea r>
-                </form>
-            </div> -->
-              
             <div class="chat-input-container">
                 <textarea class="chat-input" placeholder="Describe your company..." rows="2"></textarea>
+                <button class="uk-button uk-button-primary custom-button" id="searchButton">Search</button>
             </div>
+            <div class="uk-table uk-table-striped" id="tabletest"></div>
+            <script>
+                $(document).ready(function(){
+                    $('#searchButton').click(function(){
+                        $.ajax({
+                            url:"data_front.csv",
+                            dataType:"text",
+                            success:function(data){
+                                var employee_data = data.split(/\r?\n|\r/);
+                                var table_data = '<table class="table table-bordered table-striped">';
+                                for(var count = 0; count<employee_data.length; count++){
+                                    var cell_data = employee_data[count].split(";");
+                                    table_data += '<tr>';
+                                    for(var cell_count=0; cell_count<cell_data.length; cell_count++){
+                                        if(count === 0){
+                                            table_data += '<th>'+cell_data[cell_count]+'</th>';
+                                        } else{
+                                            table_data += '<td>'+cell_data[cell_count]+'</td>';
+                                        }
+                                    }
+                                    table_data += '</tr>';
+                                }
+                                table_data += '</table>';
+                                $('#tabletest').html(table_data);
+                            }
+                        });
+                    });
+                });
+            </script>
         </div>
     </body>
 </html>
