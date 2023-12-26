@@ -38,3 +38,43 @@
 .custom-button {
     border-radius: 15px;  /*how much the input borders are*/
 }
+/* .uk-navbar-nav > li:not(:last-child) {
+    border-right: 1px solid #ccc;
+}
+
+/* Optional: Style the navigation links */
+.uk-navbar-nav li {
+    padding-left: 30%;
+    height: fit-content;
+    text-align: center;
+}
+
+.uk-navbar-nav a {
+    color: #971717;
+    font-weight: bold;
+}
+.custom-img {
+    height: 100px; /* Adjust the height as needed */
+    width: auto; /* Adjust the width as needed */
+    /* max-width: 100%; Ensure the image doesn't exceed its original size */
+    /* display: block; Remove any extra spacing below the image */
+}
+.logo-image{
+    width: 46px;
+    height: 46px;
+    border-radius: 15%;
+    overflow: hidden;
+    align-items: center;
+}
+.social-icons img{
+    width: 20px;
+    height: 20px;
+}
+.no-bullets {
+    margin-bottom: 100px;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+
