@@ -37,6 +37,14 @@
 }
 .custom-button {
     border-radius: 15px;  /*how much the input borders are*/
+    color: #000000;
+    background-color:#e1e0e0;
+}
+
+.custom-button2 {
+    border-radius: 15px;  /*how much the input borders are*/
+    color: #1c029b;
+    background-color:#ffffff;
 }
 /* .uk-navbar-nav > li:not(:last-child) {
     border-right: 1px solid #ccc;
@@ -77,4 +85,52 @@
     margin: 0;
 }
 
+.chat-input-list li {
+    margin-right: 10px; /* Adjust spacing between elements */
+}
+.table-container {
+    display: flex;
+    align-items: center; /* Align items vertically */
+}
 
+
+
+.hover-window {
+    position: absolute; /* Position the hover window */
+    top: calc(100% + 10px); /* Place it below the table */
+    left: 0;
+    width: 200px; /* Adjust the width as needed */
+    background-color: #fff; /* Set background color */
+    border: 1px solid #ccc; /* Add border */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add box shadow */
+    padding: 10px; /* Add padding */
+    display: none; /* Initially hide the window */
+}
+
+.uk-table-container:hover .hover-window {
+    display:block; /* Display the window when hovering over the table container */
+}
+
+
+.window-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: block; /* Initially hide the window */
+}
+
+.window {
+    /* Style for the window content */
+}
+
+.space {
+    height: 10px; /* Set the height of the space */
+}
+.italic {
+    font-style: italic;
+}
