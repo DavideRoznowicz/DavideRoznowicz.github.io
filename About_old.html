@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stile.css">
+    <title>Getting Started with Chart JS with www.chartjs3.com</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+      }
+      .chartMenu {
+        width: 100vw;
+        height: 40px;
+        background: #1A1A1A;
+        color: rgba(54, 162, 235, 1);
+      }
+      .chartMenu p {
+        padding: 10px;
+        font-size: 20px;
+      }
+      .chartCard {
+        width: 100vw;
+        height: calc(100vh - 40px);
+        background: rgba(54, 162, 235, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .chartBox {
+        width: 700px;
+        padding: 20px;
+        border-radius: 20px;
+        border: solid 3px rgba(54, 162, 235, 1);
+        background: white;
+      }
+      .color-panel {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .color-panel button {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin: 5px;
+        border: none;
+        cursor: pointer;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="chartMenu">
+      <p>Bar Chart</p>
+    </div>
+    <div class="chartCard" id="chartCard">
+      <div class="chartBox">
+        <button onClick="download()">Download</button>
+        <canvas id="myChart">
+      </div>
+      <div id="colorPanel" class="color-panel">
+        <button class="color" style="background-color: red;" id="color 1"></button>
+        <button class="color" style="background-color: blue;" id="color 2"></button>
+        <button class="color" style="background-color: green;" id="color 3"></button>
+        <button class="color" style="background-color: yellow;" id="color 4"></button>
+        <button class="color" style="background-color: orange;" id="color 5"></button>
+      </div>
+    </div>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
+    <script>
+    // setup 
+    const data = {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        label: 'Mon',
+        label: ['Tue', 'Wed'],
+        data: [18, 12, 6, 9, 12, 3, 9],
+        backgroundColor: [
+            'rgba(255, 26, 104, 1)',
+            'rgba(255, 26, 104, 1)',
+            'rgba(255, 26, 104, 1)',
+            'rgba(255, 26, 104, 1)',
+            'rgba(255, 26, 104, 1)',
+            'rgba(255, 26, 104, 1)',
+            'rgba(255, 26, 104, 1)',
+        ],
+        borderColor: [
+            'rgba(255, 26, 104, 1)',
+            'rgba(255, 26, 104, 1)',
+            'rgba(255, 26, 104, 1)',
+            'rgba(255, 26, 104, 1)',
+            'rgba(255, 26, 104, 1)',
+            'rgba(255, 26, 104, 1)',
+            'rgba(255, 26, 104, 1)',
+        ],
+        borderWidth: 1
+      }]
+    };
+
+    // config 
+    const config = {
+      type: 'bar',
+      data,
+      options: {
+        plugins: {
+            legend: {
+                display: true,
+                labels: {
+                    color: 'rgb(255, 99, 132)'
+                },
+            }
+        },
+        devicePixelRatio: 8,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      },
+      animation: {
+        onComplete: function () {
+            console.log(myChart.toBase64Image());
+        },
+      }
+    };
+
+    // render init block
+    const ctx = document.getElementById('myChart');
+    const myChart = new Chart(
+      ctx,
+      config
+    );
+
+    const colorPanel = document.getElementById('colorPanel');
+    const chartCard = document.getElementById('chartCard');
+    const color1 = document.getElementById('color 1');
+    const color2 = document.getElementById('color 2');
+    const color3 = document.getElementById('color 3');
+    const color4 = document.getElementById('color 4');
+    const color5 = document.getElementById('color 5');
+
+
+    function clickHandler(click){
+        if (colorPanel.style.display == 'block') {
+            colorPanel.style.display = 'none'
+        }
+        console.log('Clicked on canvas!')
+        const points = myChart.getElementsAtEventForMode(click, 'nearest', {
+            intersect:true}, true);
+        console.log(points);
+        // myChart.data.datasets[points[0].datasetIndex].backgroundColor[points[0].index] = 'red'
+        // myChart.data.datasets[points[0].datasetIndex].borderColor[points[0].index] = 'white'
+        if (points[0]) {
+            colorPanel.style.backgroundColor = 'black';
+            colorPanel.style.display = 'block';
+            colorPanel.style.left = event.pageX + 'px';
+            colorPanel.style.top = event.pageY + 'px';
+            const colorButtons = colorPanel.querySelectorAll('.color');
+
+            colorButtons.forEach(button => {
+                button.onclick = function() {
+                    changeColor(points, button);
+                };
+            });
+        }
+        else {
+            colorPanel.style.display = 'none';
+        }
+
+
+        // const colorButtons = colorPanel.querySelectorAll('.color');
+        // const color = this.style.backgroundColor;
+        // //console.log('Selected color:', color);
+        // colorPanel.style.display = 'none'; // Hide color panel after click
+        // myChart.data.datasets[points[0].datasetIndex].backgroundColor[points[0].index] = color
+        // console.log('index == ', points[0].index);
+        // myChart.update();
+
+
+        // colorButtons.forEach(button => {
+        //     const onClickHandler = (event) => {
+        //         fff(button, points,colorPanel)
+        //         button.removeEventListener('click', onClickHandler); 
+        //     };
+        //     // button.addEventListener('click', () => {
+        //         // button.addEventListener('click',onClickHandler)
+
+        //     // });
+        //     myChart.update();
+        // });
+
+        // colorButtons.forEach(button => {
+        //     ccc = button.addEventListener('click', function() {
+        //         fff(button, points,colorPanel)
+        //     });
+        //     // button.addEventListener('click', () => {
+        //         button.removeEventListener('click',ccc)
+        //     // });
+        //     myChart.update();
+        // });
+    }
+
+
+    function changeColor(points, colorElement){
+        const color = colorElement.style.backgroundColor;
+        //console.log('Selected color:', color);
+        colorPanel.style.display = 'none'; // Hide color panel after click
+        myChart.data.datasets[points[0].datasetIndex].backgroundColor[points[0].index] = color
+        
+        // myChart.datasets[0].bars[0].fillColor = "black";
+        console.log('index == ', points[0].index);
+        myChart.update();
+    }
+
+
+    function fff(self,points) {
+        const color = self.style.backgroundColor;
+        //console.log('Selected color:', color);
+        colorPanel.style.display = 'none'; // Hide color panel after click
+        myChart.data.datasets[points[0].datasetIndex].backgroundColor[points[0].index] = color
+        console.log('index == ', points[0].index);
+        myChart.update();
+    }
+
+    function download() {
+        const imageLink = document.createElement('a');
+        const canvas = document.getElementById('myChart');
+        imageLink.download = 'canvas.png'
+        imageLink.href = canvas.toDataURL('image/png',8);
+        //document.write('<img src=" '+imageLink+' "/>');
+        console.log(imageLink.href);
+        imageLink.click();
+     }
+
+    // colorPanel.onclick = panelOnClickHandler;
+    ctx.onclick = clickHandler;
+
+
+    </script>About_old.html
+
+  </body>
+</html>
+
+
+

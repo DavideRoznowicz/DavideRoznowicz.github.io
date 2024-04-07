@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stile.css">
-    <title>Getting Started with Chart JS with www.chartjs3.com</title>
+    <title>Bar Chart</title>
     <style>
       * {
         margin: 0;
@@ -75,84 +75,180 @@
       </div>
     </div>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <script>
-    // setup 
-    const data = {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      datasets: [{
-        label: 'Mon',
-        label: ['Tue', 'Wed'],
-        data: [18, 12, 6, 9, 12, 3, 9],
-        backgroundColor: [
-            'rgba(255, 26, 104, 1)',
-            'rgba(255, 26, 104, 1)',
-            'rgba(255, 26, 104, 1)',
-            'rgba(255, 26, 104, 1)',
-            'rgba(255, 26, 104, 1)',
-            'rgba(255, 26, 104, 1)',
-            'rgba(255, 26, 104, 1)',
-        ],
-        borderColor: [
-            'rgba(255, 26, 104, 1)',
-            'rgba(255, 26, 104, 1)',
-            'rgba(255, 26, 104, 1)',
-            'rgba(255, 26, 104, 1)',
-            'rgba(255, 26, 104, 1)',
-            'rgba(255, 26, 104, 1)',
-            'rgba(255, 26, 104, 1)',
-        ],
-        borderWidth: 1
-      }]
-    };
 
-    // config 
-    const config = {
-      type: 'bar',
-      data,
-      options: {
-        plugins: {
-            legend: {
-                display: true,
-                labels: {
-                    color: 'rgb(255, 99, 132)'
-                },
-            }
-        },
-        devicePixelRatio: 8,
-        scales: {
-          y: {
-            beginAtZero: true
-          }
+    function parseCsvData(csvData) {
+        const lines = csvData.split('\n');
+        const header = lines[0].split(',');
+
+        // Initialize arrays for each column
+        const columnArrays = {};
+        for (const columnName of header) {
+            columnArrays[columnName] = [columnName];
         }
-      },
-      animation: {
-        onComplete: function () {
-            console.log(myChart.toBase64Image());
+
+        // Process each line (skip the header line)
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',');
+            for (let j = 0; j < header.length; j++) {
+                const columnName = header[j];
+                const value = values[j];
+                if (!isNaN(parseFloat(value))) {
+                    columnArrays[columnName].push(parseFloat(value));
+                } else {
+                    columnArrays[columnName].push(value);
+                }
+            }
+        }
+        // Extract the arrays from the object
+        const arrays = Object.values(columnArrays);
+        return arrays;
+    }
+
+
+
+
+    var date;
+    const columnArrays = {};
+
+
+    $(document).ready(function(){
+        $.ajax({
+            url:"table-file.csv",
+            dataType:"text",
+            success:function(csvData){
+                [date,values] = parseCsvData(csvData);
+                console.log(date,values)
+                console.log('date == ', date);
+                createChart(date.slice(1), values.slice(1))
+            }
+        });
+    });
+
+    console.log(date)
+
+    var myChart;
+
+    function createChart(dates,values){
+        const ctx = document.getElementById('myChart');
+
+        const backgroundColor = (context, first_color, second_color) => {
+            const bgColor = [
+                first_color,
+                second_color,
+            ];
+            
+            if (!context.chart.chartArea){
+                return;
+            }
+            const {ctx, data, chartArea: {top,bottom}} = context.chart;
+            const gradientBg = ctx.createLinearGradient(0,top,0,bottom);
+            gradientBg.addColorStop(0.5,bgColor[0])
+            gradientBg.addColorStop(1,bgColor[1])
+            return gradientBg;
+        };
+
+        const borderColor = [
+            'rgba(255, 26, 104, 1)',
+        ];
+        const borderWidth = 1;
+
+        const data = {
+            labels: dates,
+            datasets: [
+                {
+                    label: 'iPhone sales on Amazon',
+                    data: values,
+                    borderColor: borderColor,
+                    backgroundColor: function(context, first_color, second_color) {
+                        return backgroundColor(context,'rgba(0, 0, 0, 1)','rgba(0, 0, 0, 1)');
+                    },
+                },
+            ]
+        };
+
+        
+        // Note: changes to the plugin code is not reflected to the chart, because the plugin is loaded at chart construction time and editor changes only trigger an chart.update().
+        const image = new Image();
+        image.src = 'beach-image.jpg';
+
+        const plugin = {
+            id: 'customCanvasBackgroundImage',
+            beforeDraw: (chart) => {
+                if (image.complete) {
+                const ctx = chart.ctx;
+                const {top, left, width, height} = chart.chartArea;
+                const x = left + width / 2 - image.width / 2;
+                const y = top + height / 2 - image.height / 2;
+                ctx.drawImage(image, x, y);
+                } else {
+                image.onload = () => chart.draw();
+                }
+            }
+        };
+
+        // config 
+        const config = {
+        type: 'bar',
+        data,
+        options: {
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: {
+                        color: 'rgb(0, 0, 0)'
+                    },
+                }
+            },
+            devicePixelRatio: 8,
+            scales: {
+                x: {
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            },
         },
-      }
-    };
+        animation: {
+            onComplete: function () {
+                console.log(myChart.toBase64Image());
+            },
+        },
+        plugins: [plugin],
+        };
 
-    // render init block
-    const ctx = document.getElementById('myChart');
-    const myChart = new Chart(
-      ctx,
-      config
-    );
+        // render init block
+        myChart = new Chart(
+            ctx,
+            config
+        );
 
-    const colorPanel = document.getElementById('colorPanel');
-    const chartCard = document.getElementById('chartCard');
-    const color1 = document.getElementById('color 1');
-    const color2 = document.getElementById('color 2');
-    const color3 = document.getElementById('color 3');
-    const color4 = document.getElementById('color 4');
-    const color5 = document.getElementById('color 5');
+        const colorPanel = document.getElementById('colorPanel');
+        const chartCard = document.getElementById('chartCard');
+        const color1 = document.getElementById('color 1');
+        const color2 = document.getElementById('color 2');
+        const color3 = document.getElementById('color 3');
+        const color4 = document.getElementById('color 4');
+        const color5 = document.getElementById('color 5');
 
+        ctx.onclick = clickHandler;
+    }
 
     function clickHandler(click){
+
         if (colorPanel.style.display == 'block') {
             colorPanel.style.display = 'none'
         }
         console.log('Clicked on canvas!')
+        
         const points = myChart.getElementsAtEventForMode(click, 'nearest', {
             intersect:true}, true);
         console.log(points);
@@ -167,57 +263,71 @@
 
             colorButtons.forEach(button => {
                 button.onclick = function() {
+                    console.log('change color happening...')
                     changeColor(points, button);
                 };
             });
         }
         else {
             colorPanel.style.display = 'none';
-        }
+        } 
+    }
 
+    function createGradient(ctx, chartArea, colorStops) {
+        const chartWidth = chartArea.right - chartArea.left;
+        const chartHeight = chartArea.bottom - chartArea.top;
 
-        // const colorButtons = colorPanel.querySelectorAll('.color');
-        // const color = this.style.backgroundColor;
-        // //console.log('Selected color:', color);
-        // colorPanel.style.display = 'none'; // Hide color panel after click
-        // myChart.data.datasets[points[0].datasetIndex].backgroundColor[points[0].index] = color
-        // console.log('index == ', points[0].index);
-        // myChart.update();
+        // Create the gradient
+        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
 
+        // Add color stops
+        colorStops.forEach(colorStop => {
+            gradient.addColorStop(colorStop.position, colorStop.color);
+        });
 
-        // colorButtons.forEach(button => {
-        //     const onClickHandler = (event) => {
-        //         fff(button, points,colorPanel)
-        //         button.removeEventListener('click', onClickHandler); 
-        //     };
-        //     // button.addEventListener('click', () => {
-        //         // button.addEventListener('click',onClickHandler)
-
-        //     // });
-        //     myChart.update();
-        // });
-
-        // colorButtons.forEach(button => {
-        //     ccc = button.addEventListener('click', function() {
-        //         fff(button, points,colorPanel)
-        //     });
-        //     // button.addEventListener('click', () => {
-        //         button.removeEventListener('click',ccc)
-        //     // });
-        //     myChart.update();
-        // });
+        return gradient;
     }
 
 
     function changeColor(points, colorElement){
-        const color = colorElement.style.backgroundColor;
-        //console.log('Selected color:', color);
         colorPanel.style.display = 'none'; // Hide color panel after click
-        myChart.data.datasets[points[0].datasetIndex].backgroundColor[points[0].index] = color
-        
-        // myChart.datasets[0].bars[0].fillColor = "black";
-        console.log('index == ', points[0].index);
+        const bgColor = [
+            'rgba(0, 0, 0, 1)',
+            colorElement.style.backgroundColor,
+        ];
+        const {ctx, data, chartArea: {top,bottom}} = myChart;
+        const gradientBg = ctx.createLinearGradient(0,top,0,bottom);
+        gradientBg.addColorStop(0.5,bgColor[0])
+        gradientBg.addColorStop(1,bgColor[1])
+
+        // Update the dataset's backgroundColor property with the new gradient
+        myChart.data.datasets[0].backgroundColor = gradientBg;
+
+
+        // Update the chart
         myChart.update();
+
+
+        // const bgColor = [
+        //     'rgba(255, 26, 104, 1)',
+        //     'rgba(255, 255, 255, 1)',
+        // ];
+        // const {ctx, data, chartArea: {top,bottom}} = myChart;
+        // const gradientBg = ctx.createLinearGradient(0,top,0,bottom);
+        // gradientBg.addColorStop(0.5,bgColor[0])
+        // gradientBg.addColorStop(1,bgColor[1])
+
+        
+        // // const color = colorElement.style.backgroundColor;
+        // // console.log(color)
+
+        // // //console.log('Selected color:', color);
+        // // colorPanel.style.display = 'none'; // Hide color panel after click
+        // console.log('color before change == ', myChart.data.datasets[points[0].datasetIndex]);
+        // myChart.data.datasets[points[0].datasetIndex].backgroundColor[points[0].index] = gradientBg
+        // console.log('color after change == ', myChart.data.datasets[points[0].datasetIndex]);
+        // // console.log('index == ', points[0].index);
+        // myChart.update();
     }
 
 
@@ -225,7 +335,7 @@
         const color = self.style.backgroundColor;
         //console.log('Selected color:', color);
         colorPanel.style.display = 'none'; // Hide color panel after click
-        myChart.data.datasets[points[0].datasetIndex].backgroundColor[points[0].index] = color
+        myChart.data.datasets[points[0].datasetIndex].backgroundColor[points[0].index] = 'black'
         console.log('index == ', points[0].index);
         myChart.update();
     }
@@ -240,198 +350,9 @@
         imageLink.click();
      }
 
-    // colorPanel.onclick = panelOnClickHandler;
-    ctx.onclick = clickHandler;
-
 
     </script>
 
   </body>
 </html>
 
-
-
-
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Color Selection Panel</title>
-<style>
-    .color-panel {
-        display: none;
-        position: absolute;
-        top: 0;
-        left: 0;
-        padding: 10px;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    .color-panel button {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        margin: 5px;
-        border: none;
-        cursor: pointer;
-    }
-</style>
-</head>
-<body>
-<canvas id="myChart" width="400" height="400"></canvas>
-<div id="colorPanel" class="color-panel">
-    <button class="color" style="background-color: red;"></button>
-    <button class="color" style="background-color: blue;"></button>
-    <button class="color" style="background-color: green;"></button>
-    <button class="color" style="background-color: yellow;"></button>
-    <button class="color" style="background-color: orange;"></button>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const canvas = document.getElementById('myChart');
-    const ctx = canvas.getContext('2d');
-    let myChart;
-
-    canvas.addEventListener('click', function(event) {
-        const colorPanel = document.getElementById('colorPanel');
-        colorPanel.style.display = 'block';
-        colorPanel.style.left = event.pageX + 'px';
-        colorPanel.style.top = event.pageY + 'px';
-
-        const colorButtons = colorPanel.querySelectorAll('.color');
-        colorButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const color = this.style.backgroundColor;
-                console.log('Selected color:', color);
-                colorPanel.style.display = 'none'; // Hide color panel
-                const clickedIndex = parseInt(this.dataset.index);
-                const datasetIndex = 0; // Assuming only one dataset is present
-                const dataset = myChart.data.datasets[datasetIndex];
-                dataset.backgroundColor[clickedIndex] = color;
-                myChart.update();
-            });
-        });
-    });
-
-    // Chart.js initialization
-    const chartData = {
-        labels: ['Red', 'Blue', 'Green', 'Yellow', 'Orange'],
-        datasets: [{
-            label: 'Sample Data',
-            data: [12, 19, 3, 5, 2],
-            backgroundColor: ['red', 'blue', 'green', 'yellow', 'orange'],
-            borderColor: ['red', 'blue', 'green', 'yellow', 'orange'],
-            borderWidth: 1
-        }]
-    };
-
-    const chartOptions = {
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    };
-
-    myChart = new Chart(ctx, {
-        type: 'bar',
-        data: chartData,
-        options: chartOptions
-    });
-</script>
-</body>
-</html> -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- 
-<html>
-    <head>
-        <title>Seach Your Company</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="uikit/css/uikit.min.css" />
-        <link rel="stylesheet" type="text/css" href="style.css">
-        <script src="uikit/js/uikit.min.js"></script>
-        <script src="uikit/js/uikit-icons.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    
-        <script src="script.js"></script>
-    </head>
-
-    <body style="background: rgb(0, 0, 0);" class="uk-light"> -->
-        <!-- <nav class="uk-navbar uk-navbar-attached">
-            <ul class="uk-navbar-nav">
-                <li class="uk-active">
-                    <a class="uk-active navbar-brand" href="index.html">
-                        <div class="logo-image">
-                            <img src="TechAlbatross_Logo_700x700.jpg" alt="Brand Logo">
-                        </div>
-                    </a>
-                </li>
-                <li class="uk-active" href="/">
-                    <a class="uk-active" href="index.html">Home</a>
-                </li>
-                <li class="uk-active" href="/">
-                    <a class="uk-active" href="Search-page.html">Search Company</a>
-                </li>
-                <li class="uk-active">
-                    <a class="uk-active" href="About.html">About</a>
-                </li>
-            </ul>
-        </nav>
-
-        <div id="About-page"
-             class="uk-section uk-cover-container uk-background-cover uk-background-fixed"
-             uk-height-viewport>
-             <div class="uk-container about-container" uk-scrollspy="cls: uk-animation-slide-left">
-                <h2>About Us</h2>
-                <h1 class="uk-text-default" >This is Davide & Simone Feel free to share any feedback on the product. We are always keen on having a chat and potentially collaborate, so don't hesitate to contact us!<br>
-                    Last but not least, follow us on Linkedin and X to know more about our journey!</h1> <br>
-                <div class="contact-info">
-                    <h3>Contact Information</h3>
-                    <h1 class="uk-text-default" >Email: <a href="simone.roznowicz@gmail.com">simone.roznowicz@gmail.com</a></h1><br>
-                </div>
-                <div class="social-icons">
-                    <ul class="no-bullets">
-                        <h3>Follow Simone:</h3>
-                        <li style="margin-bottom: 10px;">
-                            <a href="https://www.linkedin.com/in/simone-roznowicz" target="_blank" title="LinkedIn"><img src="Linkedin-logo.png" alt="LinkedIn"></a>
-                        </li>
-                        <li>
-                            <a href="https://twitter.com/SimoneRoznowicz" target="_blank" title="X"><img src="X_logo_2023_(white).png" alt="X"></a>
-                        </li>
-                        <h3>Follow Davide:</h3>
-                        <li style="margin-bottom: 10px;">
-                            <a href="https://www.linkedin.com/in/davideroznowicz/" target="_blank" title="LinkedIn"><img src="Linkedin-logo.png" alt="LinkedIn"></a>
-                        </li>
-                        <li>
-                            <a href="https://twitter.com/DavideRoznowicz" target="_blank" title="X"><img src="X_logo_2023_(white).png" alt="X"></a>
-                        </li>
-                    </ul>
-                </div>
-                
-            </div>
-        </div> -->
-
-    <!-- </body> -->
-<!-- </html> -->
